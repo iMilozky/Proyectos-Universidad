@@ -1,0 +1,284 @@
+from datetime import datetime
+tarifas=[0,0]
+autos=[]
+motos=[] 
+facturas=0
+def menutarifas():
+    opc=0
+    global tarifas
+    def ingresartarifa():
+        global tarifas
+        opcIngTarifas=0
+        while opcIngTarifas!=3:
+            print("\n 1. Ingresar tarifa de automovil")
+            print(" 2. Ingresar tarifa de motocicleta")
+            print(" 3. Regresar al subMenu tarifas")
+            opcIngTarifas=int(input("Digite la opcion: "))
+            if opcIngTarifas==1:
+                tar=int(input("Ingresa el valor a cobrar por minuto para automóviles: "))
+                tarifas[0]=tar
+            elif opcIngTarifas==2:
+                tar=int(input("Ingresa el valor a cobrar por minuto para motocicletas: "))
+                tarifas[1]=tar
+    def actualizartarifa():
+        global tarifas
+        opcActTar=0
+        while opcActTar!=3:
+            print("\n 1. Modificar tarifa de automovil")
+            print(" 2. Modificar tarifa de motocicleta")
+            print(" 3. Regresar al subMenu tarifas")
+            opcActTar=int(input("Digite la opcion: "))
+            if opcActTar==1:
+                tar=int(input("Ingresa el valor a cobrar por minuto para automóviles: "))
+                tarifas[0]=tar
+            elif opcActTar==2:
+                tar=int(input("Ingresa el valor a cobrar por minuto para motocicletas: "))
+                tarifas[1]=tar             
+    while opc!=4:
+        print ("\nMenu tarifas")
+        print ("    1. Ingresar tarifas")
+        print ("    2. Mostrar tarifas")
+        print ("    3. Modificar tarifas")
+        print ("    4. Regresar al menu principal")
+        opc=int(input("Digite la opcion: "))
+        if opc==1:
+            ingresartarifa()
+        elif opc==2:
+            print("\nValor por minuto Automovil:",tarifas[0])
+            print("Valor por minuto Motocicleta:",tarifas[1])
+        elif opc==3:
+            actualizartarifa()
+def ingresarvehiculo():
+    global autos
+    global motos
+    global facturas
+    facturas=facturas+1
+    tipo=input("ingrese tipo de vehiculo, \"a\" para automovil y \"m\" para moto: ")
+    if tipo=="a":
+        placaAuto=input("Ingrese la placa del automovil (3 Letras seguidas de 3 numeros): ")
+        for auto in autos:
+            if auto[0]==placaAuto and auto[2]==None:
+                print("la placa ya esta registrada") 
+                return
+        horaingreso=input("Digite la hora de ingreso(el formato de 24 horas hhmm): ")
+        nombre=input("ingrese nombre del cliente: ")
+        autos.append([placaAuto,horaingreso,None,nombre,facturas])
+    elif tipo=="m":
+        placaMoto=input("Ingrese la placa de la motocicleta (3 Letras seguidas de 2 numeros, seguidas de una letra): ")
+        for moto in motos:
+            if moto[0]==placaMoto and moto[2]==None:
+                print("la placa ya esta registrada") 
+                return
+        horaingreso=input("Digite la hora de ingreso(el formato de 24 horas hhmm): ")
+        nombre=input("ingrese nombre del cliente: ")
+        motos.append([placaMoto,horaingreso,None,nombre,facturas])
+def buscarvehiculo():
+    opc=0
+    while opc!=3:
+        encontrado= False
+        print(" 1. Buscar motos")
+        print(" 2. Buscar automoviles")
+        print(" 3. Regresar al menu principal") 
+        opc=int(input("Seleccione opcion:"))
+        if opc==1:
+            buscar=input("Ingrese la placa que buscara: ")
+            for moto in motos:
+                if moto[0]==buscar:
+                    print("Factura Nro",moto[4])
+                    print("Placa: ",moto[0])
+                    print("Vehiculo tipo: Moto")
+                    print("Hora de ingreso: ",moto[1])
+                    if moto[2]==None:
+                        print("Hora de salida:")
+                        print("Nombre:", moto[3])
+                        print("Numero minutos:")
+                        print("Total:")
+                    else:
+                        print("Hora de salida:",moto[2])
+                        print("Nombre:", moto[3])
+                        minutos=(datetime.strptime(moto[2], "%H%M") - datetime.strptime(moto[1], "%H%M")).seconds // 60
+                        print("Numero minutos: ",minutos)
+                        print("Total:", minutos*tarifas[1])
+                    encontrado= True
+                    break
+            if not encontrado:
+                print ("Vehiculo no encontrado")
+        elif opc==2:
+            buscar=input("Ingrese la placa que buscara: ")
+            for auto in autos:
+                if auto[0]==buscar:
+                    print("Factura Nro",auto[4])
+                    print("Placa: ",auto[0])
+                    print("Vehiculo tipo: Automovil")
+                    print("Hora de ingreso: ",auto[1]) 
+                    if auto[2]==None:
+                        print("Hora de salida:")
+                        print("Nombre:", auto[3])
+                        print("Numero minutos:")
+                        print("Total:")
+                    else:
+                        print("Hora de salida:",auto[2])
+                        print("Nombre:", auto[3])
+                        minutos=(datetime.strptime(auto[2], "%H%M") - datetime.strptime(auto[1], "%H%M")).seconds // 60
+                        print("Numero minutos: ",minutos)
+                        print("Total:", minutos*tarifas[0])
+                    encontrado= True
+                    break
+            if not encontrado:
+                print ("Vehiculo no encontrado")
+def mostrarregistro():
+    opc=0
+    while opc!=3:
+        print(" 1. Mostrar todos los automoviles")
+        print(" 2. Mostrar todos las motocicletas")
+        print(" 3. Regresar al menu principal")
+        opc=int(input("Seleccione opcion:"))
+        if opc==1:
+            print("Tipo de busqueda: AUTOMOVILES") 
+            print("FACTURA","PLACA", " INGRESO", "SALIDA", "MINUTOS", "TOTAL")
+            for auto in autos:
+                print(f"{auto[4]:<7}", f"{auto[0]:<6}", f"{auto[1]:<8}",end="")
+                if auto[2]!=None:
+                    minutos=(datetime.strptime(auto[2], "%H%M") - datetime.strptime(auto[1], "%H%M")).seconds // 60
+                    print(f"{auto[2]:<6}", f"{minutos:<7}", f"{minutos*tarifas[0]:<8}")
+                else:
+                    print()
+        if opc==2:
+            print("Tipo de busqueda: MOTOCICLETA") 
+            print("FACTURA","PLACA", " INGRESO", "SALIDA", "MINUTOS", "TOTAL")
+            for moto in motos:
+                print(f"{moto[4]:<7}", f"{moto[0]:<6}", f"{moto[1]:<8}",end="")
+                if moto[2]!=None:
+                    minutos=(datetime.strptime(moto[2], "%H%M") - datetime.strptime(moto[1], "%H%M")).seconds // 60
+                    print(f"{moto[2]:<6}", f"{minutos:<7}", f"{minutos*tarifas[1]:<8}")
+                else:
+                    print()
+def salida():
+    global motos
+    global autos
+    encontrado=False
+    vehiculo=input("ingrese tipo de vehiculo, \"a\" para automovil y \"m\" para moto: ")
+    buscar=input("Ingrese la placa del vehiculo: ")
+    salida=input("Ingrese la hora de salida en formato hhmm: ")
+    if vehiculo=="m":
+        for moto in motos:
+            if moto[0]==buscar:
+                if int(salida)>int(moto[1]):
+                    moto[2]=salida
+                else:
+                    print("La hora que ingreso es incorrecta")
+                    return
+                print("Factura Nro",moto[4])
+                print("Vehiculo tipo: Moto")
+                print("Placa: ",moto[0])
+                print("hora de salida: ", salida)
+                minutos=(datetime.strptime(moto[2], "%H%M") - datetime.strptime(moto[1], "%H%M")).seconds // 60
+                print("Numero de minutos: ", minutos)
+                print("Total a pagar: ", minutos*tarifas[1])
+                encontrado=True
+                break
+        if not encontrado:
+            print("Vehiculo NO registrado")
+    elif vehiculo=="a":
+        for auto in autos:
+            if auto[0]==buscar:
+                if int(salida)>int(auto[1]):
+                    auto[2]=salida
+                else:
+                    print("La hora que ingreso es incorrecta")
+                    return
+                print("Factura Nro",auto[4])
+                print("Vehiculo tipo: Auto")
+                print("Placa: ",auto[0])
+                print("hora de salida: ", salida)
+                minutos=(datetime.strptime(auto[2], "%H%M") - datetime.strptime(auto[1], "%H%M")).seconds // 60
+                print("Numero de minutos: ", minutos)
+                print("Total a pagar: ", minutos*tarifas[0])
+                encontrado=True
+                break
+        if not encontrado:
+            print("Vehiculo NO registrado")
+
+def buscar():
+    fac=int(input("Digite el numero de la factura: "))
+    for moto in motos:
+            if moto[4]==fac:
+                print("Factura Nro",moto[4])
+                print("Placa: ",moto[0])
+                print("Vehiculo tipo: Moto")
+                print("Hora de ingreso: ",moto[1])
+                if moto[2]==None:
+                    print("Hora de salida:")
+                    print("Nombre:", moto[3])
+                    print("Numero minutos:")
+                    print("Total:")
+                else:
+                    print("Hora de salida:",moto[2])
+                    print("Nombre:", moto[3])
+                    minutos=(datetime.strptime(moto[2], "%H%M") - datetime.strptime(moto[1], "%H%M")).seconds // 60
+                    print("Numero minutos: ",minutos)
+                    print("Total:", minutos*tarifas[1])
+                return    
+    for auto in autos:
+        if auto[4]==fac:
+            print("Factura Nro",auto[4])
+            print("Placa: ",auto[0])
+            print("Vehiculo tipo: Automovil")
+            print("Hora de ingreso: ",auto[1])
+            if auto[2]==None:
+                print("Hora de salida:")
+                print("Nombre:", auto[3])
+                print("Numero minutos:")
+                print("Total:")
+            else:
+                print("Hora de salida:",auto[2])
+                print("Nombre:", auto[3])
+                minutos=(datetime.strptime(auto[2], "%H%M") - datetime.strptime(auto[1], "%H%M")).seconds // 60
+                print("Numero minutos: ",minutos)
+                print("Total:", minutos*tarifas[0])
+            break
+def cuadre():
+    totalVehiculos=0
+    sAutos=0
+    sMotos=0
+    for auto in autos:
+        if auto[2]!=None:
+            minutos=(datetime.strptime(auto[2], "%H%M") - datetime.strptime(auto[1], "%H%M")).seconds // 60
+            totalVehiculos=totalVehiculos+minutos*tarifas[0]
+            sAutos=sAutos+minutos*tarifas[0]
+    for moto in motos:
+        if moto[2]!=None:
+            minutos=(datetime.strptime(moto[2], "%H%M") - datetime.strptime(moto[1], "%H%M")).seconds // 60
+            totalVehiculos=totalVehiculos+minutos*tarifas[1]
+            sMotos=sMotos+minutos*tarifas[1]
+    print("La sumatoria de todos los vehiculos es: ", totalVehiculos)
+    print("La sumatoria de los autos es: ",sAutos)
+    print("La sumatoria de las motos es: ",sMotos)
+def menuprincipal():
+    opc=0
+    while opc!=8:
+        print ("Menu principal")
+        print ("    1. Tarifas")
+        print ("    2. Ingresar vehiculo")
+        print ("    3. Buscar vehiculo")
+        print ("    4. Mostrar registro")
+        print ("    5. Salida de vehiculos")
+        print ("    6. Buscar por factura")
+        print ("    7. Cuadre de caja")
+        print ("    8. Salir")
+        opc=int(input("Digite la opcion: "))
+        if opc==1:
+           menutarifas()
+        elif opc==2:
+            ingresarvehiculo()
+        elif opc==3:
+            buscarvehiculo()
+        elif opc==4:
+            mostrarregistro()
+        elif opc==5:
+            salida()
+        elif opc==6:
+            buscar()
+        elif opc==7:
+            cuadre()
+menuprincipal()
